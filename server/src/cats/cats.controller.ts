@@ -1,6 +1,6 @@
 import { LoginRequestDto } from './../auth/dto/login.request.dto';
 import { AuthService } from './../auth/auth.service';
-import { Body, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Body, Param, UseFilters, UseInterceptors } from '@nestjs/common';
 import { Controller, Get, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
@@ -17,10 +17,17 @@ export class CatsController {
     private readonly catsService: CatsService,
     private readonly authService: AuthService,
   ) {}
+
   @ApiOperation({ summary: '현재 고양이 가져오기' })
   @Get()
-  getCurrentCat() {
-    return 'current cat';
+  async getAllCats() {
+    return await this.catsService.getAllCats();
+  }
+
+  @ApiOperation({ summary: '현재 고양이 가져오기' })
+  @Get('/:id')
+  async getCurrentCat(@Param() { id }: { id: string }) {
+    return await this.catsService.getCurrentCat(id);
   }
 
   @ApiResponse({

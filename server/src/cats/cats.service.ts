@@ -7,6 +7,16 @@ import * as bcrypt from 'bcrypt';
 export class CatsService {
   constructor(private readonly catsRepository: CatsRepository) {}
 
+  async getAllCats() {
+    const cats = await this.catsRepository.getAllCats();
+    return cats;
+  }
+
+  async getCurrentCat(id: string) {
+    const cat = await this.catsRepository.getCurrentCats(id);
+    return cat;
+  }
+
   async signUp(body: CatRequestDto) {
     const { email, name, password } = body;
     const isCatExist = await this.catsRepository.existsByEmail(email); // 이메일 중복체크

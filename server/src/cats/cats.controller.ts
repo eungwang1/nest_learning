@@ -1,7 +1,7 @@
 import { LoginRequestDto } from './../auth/dto/login.request.dto';
 import { AuthService } from './../auth/auth.service';
 import { Body, Param, UseFilters, UseInterceptors } from '@nestjs/common';
-import { Controller, Get, Post, Put } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
@@ -17,17 +17,35 @@ export class CatsController {
     private readonly catsService: CatsService,
     private readonly authService: AuthService,
   ) {}
-
-  @ApiOperation({ summary: '현재 고양이 가져오기' })
-  @Get()
+  @ApiResponse({
+    status: 500,
+    description: 'Server Error...',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    type: ReadOnlyCatDto,
+    isArray: true,
+  })
+  @ApiOperation({ summary: '모든 고양이 가져오기' })
+  @Get('')
   async getAllCats() {
     return await this.catsService.getAllCats();
   }
 
+  @ApiResponse({
+    status: 500,
+    description: 'Server Error...',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    type: ReadOnlyCatDto,
+  })
   @ApiOperation({ summary: '현재 고양이 가져오기' })
-  @Get('/:id')
-  async getCurrentCat(@Param() { id }: { id: string }) {
-    return await this.catsService.getCurrentCat(id);
+  @Get('/:_id')
+  async getCurrentCat(@Param() { _id }: { _id: string }) {
+    return await this.catsService.getCurrentCat(_id);
   }
 
   @ApiResponse({

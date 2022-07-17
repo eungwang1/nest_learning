@@ -12,8 +12,8 @@ export class CatsService {
     return cats;
   }
 
-  async getCurrentCat(id: string) {
-    const cat = await this.catsRepository.getCurrentCats(id);
+  async getCurrentCat(_id: string) {
+    const cat = await this.catsRepository.getCurrentCats(_id);
     return cat;
   }
 

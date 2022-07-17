@@ -21,8 +21,8 @@ export class CatsRepository {
     return await this.catModel.find();
   }
 
-  async getCurrentCats(id: string): Promise<any> {
-    const cat = await this.catModel.findOne({ id });
+  async getCurrentCats(_id: string): Promise<any> {
+    const cat = await this.catModel.findOne({ _id });
     return cat;
   }
 

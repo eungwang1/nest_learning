@@ -9,12 +9,17 @@ export class CatsService {
 
   async getAllCats() {
     const cats = await this.catsRepository.getAllCats();
-    return cats;
+    const readOnlyCats = cats.map((cat) => ({
+      id: cat.id,
+      email: cat.email,
+      name: cat.name,
+    }));
+    return readOnlyCats;
   }
 
   async getCurrentCat(_id: string) {
-    const cat = await this.catsRepository.getCurrentCats(_id);
-    return cat;
+    const cat = await this.catsRepository.getCurrentCat(_id);
+    return cat.readOnlyData;
   }
 
   async signUp(body: CatRequestDto) {

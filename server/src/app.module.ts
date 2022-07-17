@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { PostsModule } from './posts/posts.module';
 @Module({
   imports: [
     ConfigModule.forRoot(), // .env 사용하려면 import 필요.
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     CatsModule,
     AuthModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

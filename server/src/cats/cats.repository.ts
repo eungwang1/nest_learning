@@ -17,11 +17,11 @@ export class CatsRepository {
     return await this.catModel.create(cat);
   }
 
-  async getAllCats(): Promise<any> {
+  async getAllCats(): Promise<Cat[]> {
     return await this.catModel.find();
   }
 
-  async getCurrentCats(_id: string): Promise<any> {
+  async getCurrentCat(_id: string): Promise<Cat> {
     const cat = await this.catModel.findOne({ _id });
     return cat;
   }

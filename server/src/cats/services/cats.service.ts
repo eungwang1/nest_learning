@@ -1,7 +1,9 @@
+import { CatUpdateDto } from './../dto/cats.update.dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CatsRepository } from './cats.repository';
-import { CatRequestDto } from './dto/cats.request.dto';
+import { CatsRepository } from '../cats.repository';
+import { CatRequestDto } from '../dto/cats.request.dto';
 import * as bcrypt from 'bcrypt';
+import { Cat } from '../cats.schema';
 
 @Injectable()
 export class CatsService {
@@ -17,9 +19,13 @@ export class CatsService {
     return readOnlyCats;
   }
 
-  async getCurrentCat(_id: string) {
-    const cat = await this.catsRepository.getCurrentCat(_id);
+  async findCatByIdWithoutPassword(id: string) {
+    const cat = await this.catsRepository.findCatByIdWithoutPassword(id);
     return cat.readOnlyData;
+  }
+
+  async update(email: string, catUpdateInfo: CatUpdateDto) {
+    return await this.catsRepository.update(email, catUpdateInfo);
   }
 
   async signUp(body: CatRequestDto) {
@@ -35,7 +41,6 @@ export class CatsService {
       name,
       password: hashedPassword,
     });
-
     return cat.readOnlyData;
   }
 }

@@ -1,13 +1,12 @@
-import { LoginRequestDto } from './../auth/dto/login.request.dto';
-import { AuthService } from './../auth/auth.service';
-import { Body, Param, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Cat } from './../cats.schema';
+import { AuthService } from '../../auth/auth.service';
+import { Param, Put, UseFilters, UseInterceptors } from '@nestjs/common';
 import { Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { CatsService } from './cats.service';
-import { ReadOnlyCatDto } from './dto/cat.dto';
-import { CatRequestDto } from './dto/cats.request.dto';
+import { CatsService } from '../services/cats.service';
+import { ReadOnlyCatDto } from '../dto/cat.dto';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -17,6 +16,8 @@ export class CatsController {
     private readonly catsService: CatsService,
     private readonly authService: AuthService,
   ) {}
+
+  // getAllCats
   @ApiResponse({
     status: 500,
     description: 'Server Error...',
@@ -33,6 +34,7 @@ export class CatsController {
     return await this.catsService.getAllCats();
   }
 
+  // findCatById
   @ApiResponse({
     status: 500,
     description: 'Server Error...',
@@ -42,39 +44,13 @@ export class CatsController {
     description: '성공',
     type: ReadOnlyCatDto,
   })
-  @ApiOperation({ summary: '현재 고양이 가져오기' })
-  @Get('/:_id')
-  async getCurrentCat(@Param() { _id }: { _id: string }) {
-    return await this.catsService.getCurrentCat(_id);
+  @ApiOperation({ summary: 'id와 매칭되는 고양이 한마리 가져오기' })
+  @Get('/:id')
+  async findCatById(@Param('id') id: string) {
+    return await this.catsService.findCatByIdWithoutPassword(id);
   }
 
-  @ApiResponse({
-    status: 500,
-    description: 'Server Error...',
-  })
-  @ApiResponse({
-    status: 200,
-    description: '성공',
-    type: ReadOnlyCatDto,
-  })
-  @ApiOperation({ summary: '회원가입' })
-  @Post()
-  async signUp(@Body() body: CatRequestDto) {
-    return await this.catsService.signUp(body);
-  }
-
-  @ApiOperation({ summary: '로그인하기' })
-  @Post('login')
-  logIn(@Body() data: LoginRequestDto) {
-    return this.authService.jwtLogIn(data);
-  }
-
-  @ApiOperation({ summary: '로그아웃하기' })
-  @Post('logout')
-  logOut() {
-    return 'logout';
-  }
-
+  // uploadImage
   @ApiOperation({ summary: '이미지 업로드하기' })
   @Post('upload/cats')
   uploadCatImg() {

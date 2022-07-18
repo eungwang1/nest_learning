@@ -1,8 +1,10 @@
+import { CatUpdateDto } from './dto/cats.update.dto';
 import { CatRequestDto } from './dto/cats.request.dto';
 import { Cat } from './cats.schema';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
 
 @Injectable()
 export class CatsRepository {
@@ -13,6 +15,16 @@ export class CatsRepository {
     return result;
   }
 
+  async update(email: string, catUpdateInfo: CatUpdateDto) {
+    const catInfo = await this.catModel.findOne({ email });
+    if (catUpdateInfo.password) catInfo.password = catUpdateInfo.password;
+    if (catUpdateInfo.name) catInfo.name = catUpdateInfo.name;
+    if (catUpdateInfo.hashedRefreshToken)
+      catInfo.hashedRefreshToken = catUpdateInfo.hashedRefreshToken;
+    await catInfo.save();
+    return catInfo.readOnlyData;
+  }
+
   async create(cat: CatRequestDto): Promise<Cat> {
     return await this.catModel.create(cat);
   }
@@ -21,8 +33,10 @@ export class CatsRepository {
     return await this.catModel.find();
   }
 
-  async getCurrentCat(_id: string): Promise<Cat> {
-    const cat = await this.catModel.findOne({ _id });
+  async findCatByIdWithoutPassword(
+    catId: string | Types.ObjectId,
+  ): Promise<Cat | null> {
+    const cat = await this.catModel.findById(catId).select('-password');
     return cat;
   }
 

@@ -50,6 +50,11 @@ export class Cat extends Document {
   @IsString()
   imgUrl: string;
 
+  @Prop({
+    default: null,
+  })
+  hashedRefreshToken: string | null;
+
   readonly readOnlyData: { id: string; email: string; name: string };
 }
 

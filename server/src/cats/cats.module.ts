@@ -2,8 +2,8 @@ import { AuthModule } from './../auth/auth.module';
 import { Cat, CatSchema } from './cats.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module, forwardRef } from '@nestjs/common';
-import { CatsController } from './cats.controller';
-import { CatsService } from './cats.service';
+import { CatsController } from './controllers/cats.controller';
+import { CatsService } from './services/cats.service';
 import { CatsRepository } from './cats.repository';
 
 @Module({

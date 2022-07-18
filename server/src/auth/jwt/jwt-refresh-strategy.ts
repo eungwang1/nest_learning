@@ -5,11 +5,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Payload } from './jwt.payload';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh-token',
+) {
   constructor(private readonly catsRepository: CatsRepository) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+      jwtFromRequest: ExtractJwt.fromBodyField('refresh_token'),
+      secretOrKey: process.env.REFRESH_TOKEN_SECRET,
       ignoreExpiration: false,
     });
   }

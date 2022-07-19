@@ -58,7 +58,7 @@ export class AuthService {
       await this.updateRefreshTokenInUser(null, email);
       return user;
     } else {
-      throw new UnauthorizedException('asda');
+      throw new UnauthorizedException();
     }
   }
 

@@ -28,8 +28,7 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createPostDto: CreatePostDto, @CurrentUser() cat: Cat) {
-    console.log(cat);
+  async create(@Body() createPostDto: CreatePostDto, @CurrentUser() cat: Cat) {
     return this.postsService.uploadPost(createPostDto);
   }
 
@@ -43,10 +42,10 @@ export class PostsController {
     return this.postsService.findOne(+id);
   }
 
-  @Patch(':_id')
-  update(@Param('_id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
-  }
+  // @Patch(':_id')
+  // update(@Param('_id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  //   return this.postsService.update(+id, updatePostDto);
+  // }
 
   @Delete(':_id')
   remove(@Param('_id') id: string) {

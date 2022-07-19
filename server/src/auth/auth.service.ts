@@ -58,7 +58,7 @@ export class AuthService {
       await this.updateRefreshTokenInUser(null, email);
       return user;
     } else {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('asda');
     }
   }
 
@@ -88,6 +88,7 @@ export class AuthService {
     await this.updateRefreshTokenInUser(refreshToken, payload.email);
 
     return {
+      cat,
       accessToken,
       refreshToken,
     };

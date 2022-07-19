@@ -4,7 +4,16 @@ import { CatUpdateDto } from './cats/dto/cats.update.dto';
 import { CatsService } from './cats/services/cats.service';
 import { AuthService } from './auth/auth.service';
 import { Cat } from './cats/cats.schema';
-import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Res,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './auth/jwt/jwt.guard';
@@ -12,7 +21,10 @@ import { CurrentUser } from './common/decorators/user.decorator';
 import { LoginRequestDto } from './auth/dto/login.request.dto';
 import { ReadOnlyCatDto } from './cats/dto/cat.dto';
 import { CatRequestDto } from './cats/dto/cats.request.dto';
+import { Response } from 'express';
+import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 
+@UseFilters(HttpExceptionFilter)
 @Controller()
 export class AppController {
   constructor(
@@ -32,14 +44,35 @@ export class AppController {
   // login
   @ApiOperation({ summary: '로그인하기' })
   @Post('/login')
-  logIn(@Body() data: LoginRequestDto) {
-    return this.authService.logIn(data);
+  async logIn(
+    @Body() data: LoginRequestDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken, cat } = await this.authService.logIn(
+      data,
+    );
+    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+    res.cookie('access_token', `Bearer ${accessToken}`, {
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+    });
+    res.cookie('refresh_token', refreshToken, {
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+    });
+
+    return cat.readOnlyData;
   }
 
-  // refresh-token
   @UseGuards(JwtRefreshTokenGuard)
   @Post('/refresh-token')
-  async refreshToken(@CurrentUser() me: Cat, @Body() token: RefreshTokenDto) {
+  async refreshToken(
+    @CurrentUser() me: Cat,
+    @Body() token: RefreshTokenDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user_info = await this.authService.getUserIfRefreshTokenMatches(
       token.refresh_token,
       me.email,
@@ -49,8 +82,20 @@ export class AppController {
         email: user_info.email,
         sub: user_info.id,
       };
-
-      return this.authService.getNewAccessAndRefreshToken(userinfo);
+      const { accessToken, refreshToken } =
+        await this.authService.getNewAccessAndRefreshToken(userinfo);
+      res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+      res.cookie('access_token', `Bearer ${accessToken}`, {
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+      });
+      res.cookie('refresh_token', refreshToken, {
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+      });
+      return { accessToken };
     } else {
       return null;
     }
@@ -58,10 +103,11 @@ export class AppController {
 
   // logout
   @ApiOperation({ summary: '로그아웃하기' })
-  @UseGuards(JwtAuthGuard)
   @Post('/logout')
-  logOut(@CurrentUser() me: Cat) {
-    return this.authService.logOut(me);
+  logOut(@CurrentUser() me: Cat, @Res({ passthrough: true }) res: Response) {
+    res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
+    return 'logout';
   }
 
   // signUp

@@ -16,7 +16,7 @@ const AuthForm: React.FC<AuthForm> = ({ type }) => {
     e.preventDefault();
     const data = { email, password, name };
     try {
-      await axios.post("http://localhost:8000/cats", data);
+      await axios.post("http://localhost:8000/join", data);
       router.push("/login");
     } catch (e: any) {
       console.error(e);
@@ -27,7 +27,7 @@ const AuthForm: React.FC<AuthForm> = ({ type }) => {
     e.preventDefault();
     const data = { email, password };
     try {
-      await axios.post("http://localhost:8000/cats/login", data);
+      await axios.post("http://localhost:8000/login", data, { withCredentials: true });
       router.push("/");
     } catch (e) {
       console.error(e);
